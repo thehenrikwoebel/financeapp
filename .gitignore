@@ -43,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# flutter_launcher_icons
+**/android/app/src/main/res/mipmap-*/
+**/android/app/src/main/res/drawable/
+**/ios/Runner/Assets.xcassets/AppIcon.appiconset/
+**/ios/Runner/Assets.xcassets/LaunchImage.imageset/
