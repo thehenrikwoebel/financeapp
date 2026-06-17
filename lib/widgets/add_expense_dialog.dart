@@ -30,6 +30,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
   bool get isFormValid {
     return nameController.text.trim().isNotEmpty &&
         amountController.text.trim().isNotEmpty &&
+        isStringValidNum(amountController.text.trim()) &&
         _categories.isNotEmpty &&
         selectedIndex >= 0;
   }
