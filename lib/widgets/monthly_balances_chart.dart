@@ -61,6 +61,18 @@ class _MonthlyBalancesChartState extends State<MonthlyBalancesChart> {
                 dotData: FlDotData(show: true),
               ),
             ],
+            lineTouchData: LineTouchData(
+              touchTooltipData: LineTouchTooltipData(
+                getTooltipItems: (touchedSpots) {
+                  return touchedSpots.map((spot) {
+                    return LineTooltipItem(
+                      '${spot.y.toStringAsFixed(0)}${AppStrings.get('currency_symbol')}',
+                      TextStyle(color: spot.y >= 0 ? Colors.green : Colors.red),
+                    );
+                  }).toList();
+                },
+              ),
+            ),
             titlesData: FlTitlesData(
               topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
               rightTitles: AxisTitles(
@@ -73,8 +85,12 @@ class _MonthlyBalancesChartState extends State<MonthlyBalancesChart> {
                       return const SizedBox.shrink();
                     }
                     return Text(
-                      '    ${value.toInt()} ${AppStrings.get('currency_symbol')}',
-                      style: const TextStyle(fontSize: 12),
+                      '${value.toInt()}${AppStrings.get('currency_symbol')}',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: value.toInt() >= 0 ? Colors.green : Colors.red,
+                      ),
                     );
                   },
                 ),

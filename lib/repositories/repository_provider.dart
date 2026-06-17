@@ -1,6 +1,7 @@
 import 'package:frontend/repositories/database_repository.dart';
 import 'package:frontend/repositories/local_web_database_repository.dart';
 import 'package:frontend/services/api_service.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class RepositoryProvider {
   static DatabaseRepository? _instance;
@@ -9,6 +10,7 @@ class RepositoryProvider {
   static Future<void> initialize() async {
     if (_isLocal) {
       final repo = LocalWebDatabaseRepository();
+      repo.addNewCategory("Sample Category", Symbols.question_mark);
       await repo.db;
       _instance = repo;
     } else {
