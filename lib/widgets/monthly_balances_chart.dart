@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/monthlyBalance.dart';
 import 'package:frontend/services/app_strings.dart';
+import 'package:frontend/utils/formatter.dart';
 
 class MonthlyBalancesChart extends StatefulWidget {
   final Future<List<MonthlyBalance>> monthlyBalancesFuture;
@@ -48,9 +49,15 @@ class _MonthlyBalancesChartState extends State<MonthlyBalancesChart> {
             .map((m) => m.balance)
             .reduce((a, b) => a > b ? a : b);
 
-        final interval = maxBalance <= 0
-            ? 50.0
-            : (maxBalance / 5).ceilToDouble();
+        final minBalance = data
+            .map((m) => m.balance)
+            .reduce((a, b) => a < b ? a : b);
+
+        final range = maxBalance - minBalance;
+        final labelCount = 4;
+
+        final rawInterval = range == 0 ? 1.0 : range / labelCount;
+        final interval = niceInterval(rawInterval);
 
         return LineChart(
           LineChartData(
