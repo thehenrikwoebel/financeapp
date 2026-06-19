@@ -25,7 +25,7 @@ class MonthlyBalanceText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(left: 16, top: 16, right: 26, bottom: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -34,7 +34,7 @@ class MonthlyBalanceText extends StatelessWidget {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           Text(
-            "${formatNumber(monthlyBalance.balance, AppStrings.currentLanguage)} ${AppStrings.get('currency_symbol')}",
+            "${formatNumber(monthlyBalance.balance, AppStrings.currentLanguage)}${AppStrings.get('currency_symbol')}",
             style: TextStyle(
               color: monthlyBalance.balance >= 0 ? Colors.green : Colors.red,
               fontSize: 20,
