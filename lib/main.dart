@@ -8,6 +8,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppStrings.loadLanguage();
   RepositoryProvider.setLocalMode(kIsWeb);
+  RepositoryProvider.setMobileLocalMode(true);
   await RepositoryProvider.initialize();
   runApp(const MyApp());
 }

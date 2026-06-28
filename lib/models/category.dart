@@ -22,11 +22,17 @@ class Category {
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      id: json['ID'],
-      name: json['Name'],
-      createdAt: DateTime.fromMillisecondsSinceEpoch(json['CreatedAt']),
+      id: json['ID'] as int,
+      name: json['Name'] as String,
+      createdAt: json['CreatedAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              (json['CreatedAt'] as num).toInt() * 1000,
+            )
+          : DateTime(0), // Fallback
       updatedAt: json['UpdatedAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(json['UpdatedAt'])
+          ? DateTime.fromMillisecondsSinceEpoch(
+              (json['UpdatedAt'] as num).toInt() * 1000,
+            )
           : null,
       icon: mapIcon(json['icon']),
       totalAmount: (json['TotalAmount'] as num?)?.toDouble(),
