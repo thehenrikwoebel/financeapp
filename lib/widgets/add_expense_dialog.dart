@@ -4,6 +4,7 @@ import 'package:frontend/models/expense.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/app_strings.dart';
 import 'package:frontend/utils/formatter.dart';
+import 'package:frontend/utils/saveResult.dart';
 import 'package:frontend/widgets/date_field.dart';
 import 'package:frontend/widgets/primary_button.dart';
 import 'package:frontend/widgets/secondary_button.dart';
@@ -207,7 +208,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
     }
 
     if (mounted) {
-      Navigator.pop(context, true);
+      Navigator.pop(context, SaveResult(success: true, result: exp));
     }
   }
 }
