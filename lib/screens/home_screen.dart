@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/monthlyBalance.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/cache.dart';
+import 'package:frontend/utils/saveResult.dart';
 import 'package:frontend/widgets/add_expense_dialog.dart';
 import 'package:frontend/widgets/app_bar_top.dart';
 import 'package:frontend/widgets/confirm_delete_dialog.dart';
@@ -122,10 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _reloadData() {
     setState(() {
-      _cache.expenses.invalidate();
-      _cache.monthlyBalance.invalidate();
-      _cache.monthlyBalances.invalidate();
-      _cache.categories.invalidate();
+      _cache.invalidateAll();
       expensesFuture = RepositoryProvider.instance
           .fetchExpenses(fetchLimit: _amountExpenses)
           .then((e) {
@@ -226,13 +224,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showEditExpenseDialog(Expense expense) async {
-    final result = await showDialog(
+    final SaveResult result = await showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => EditExpenseDialog(initialExpense: expense),
     );
-    if (result == true) {
+    if (result.success == true && !_isSearching) {
       _reloadData();
+    } else if (result.success == true && _isSearching) {
+      _cache.invalidateAll();
+      expense = result.result;
+      //TODO: add callback to expenselist to update a single expense without reloading the whole querry
     }
   }
 }

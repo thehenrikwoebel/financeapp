@@ -37,4 +37,11 @@ class AppCache {
   final monthlyBalances =
       CacheEntry<List<MonthlyBalance>>(); // list for statistics screen
   final categories = CacheEntry<List<Category>>();
+
+  void invalidateAll() {
+    expenses.invalidate();
+    monthlyBalance.invalidate();
+    monthlyBalances.invalidate();
+    categories.invalidate();
+  }
 }
