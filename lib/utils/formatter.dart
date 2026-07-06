@@ -12,7 +12,8 @@ double parseNumber(String input, String locale) {
 }
 
 bool isStringValidNum(String input) {
-  return input.startsWith(RegExp(r'-?[0-9]'));
+  final format = input.replaceAll(',', '.');
+  return num.tryParse(format) != null;
 }
 
 double niceInterval(double rawInterval) {
