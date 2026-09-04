@@ -4,6 +4,8 @@ import 'package:frontend/models/monthlyBalance.dart';
 import 'package:frontend/services/app_strings.dart';
 import 'package:frontend/utils/formatter.dart';
 
+const numberOfMonthsDisplayedInChart = 4;
+
 class MonthlyBalancesChart extends StatefulWidget {
   final Future<List<MonthlyBalance>> monthlyBalancesFuture;
   const MonthlyBalancesChart({super.key, required this.monthlyBalancesFuture});
@@ -28,12 +30,17 @@ class _MonthlyBalancesChartState extends State<MonthlyBalancesChart> {
           );
         }
 
-        final data = snapshot.data!.where((m) => m.balance != 0).toList()
+        var data = snapshot.data!.where((m) => m.balance != 0).toList()
           ..sort(
             (a, b) => a.year != b.year
                 ? a.year.compareTo(b.year)
                 : a.month.compareTo(b.month),
           );
+
+        data = data.sublist(
+          data.length - numberOfMonthsDisplayedInChart,
+          data.length,
+        );
 
         if (data.isEmpty) {
           return Center(child: Text(AppStrings.get('no_data')));
