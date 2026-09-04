@@ -11,6 +11,7 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+local.properties
 
 # IntelliJ related
 *.iml
@@ -54,3 +55,14 @@ app.*.map.json
 !**/android/app/src/main/res/mipmap-*/.gitkeep
 **/android/app/src/main/res/drawable/*
 !**/android/app/src/main/res/drawable/.gitkeep
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml

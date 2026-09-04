@@ -1,7 +1,4 @@
-
-![logo](assets/icon/icon.png)
-
-# financeapp
+# financeapp [![Built with devenv](https://devenv.sh/assets/devenv-badge.svg)](https://devenv.sh)
 A simple app for categorizing expenses.
 
 ## Quick Start
