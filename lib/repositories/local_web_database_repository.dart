@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/category.dart';
+import 'package:frontend/models/configured_expense.dart';
 import 'package:frontend/models/expense.dart';
 import 'package:frontend/models/monthlyBalance.dart';
 import 'package:frontend/repositories/database_repository.dart';
@@ -353,5 +354,44 @@ class LocalWebDatabaseRepository implements DatabaseRepository {
     }
 
     return result;
+  }
+
+  @override
+  Future<void> addNewConfiguredExpense(
+    String text,
+    String text2,
+    Category category,
+  ) {
+    // TODO: implement addNewConfiguredExpense
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteConfiguredExpense(int id) {
+    // TODO: implement deleteConfiguredExpense
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<ConfiguredExpense>> fetchConfiguredExpenses() {
+    // TODO: implement fetchConfiguredExpenses
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<ConfiguredExpense>> searchConfiguredExpenses(String query) {
+    // TODO: implement searchConfiguredExpenses
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> updateConfiguredExpense(
+    String text,
+    String text2,
+    Category category,
+    int id,
+  ) {
+    // TODO: implement updateConfiguredExpense
+    throw UnimplementedError();
   }
 }

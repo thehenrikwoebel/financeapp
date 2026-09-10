@@ -16,6 +16,11 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
         primarySwatch: Colors.blue,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        navigationBarTheme: NavigationBarThemeData(
+          labelTextStyle: WidgetStateProperty.resolveWith((states) {
+            return const TextStyle(fontSize: 12.0);
+          }),
+        ),
       ),
       home: const AppShell(),
     );

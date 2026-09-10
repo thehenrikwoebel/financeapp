@@ -1,4 +1,5 @@
 import 'package:frontend/models/category.dart';
+import 'package:frontend/models/configured_expense.dart';
 import 'package:frontend/models/expense.dart';
 import 'package:frontend/models/monthlyBalance.dart';
 
@@ -37,4 +38,6 @@ class AppCache {
   final monthlyBalances =
       CacheEntry<List<MonthlyBalance>>(); // list for statistics screen
   final categories = CacheEntry<List<Category>>();
+
+  final configuredExpenses = CacheEntry<List<ConfiguredExpense>>();
 }
