@@ -1,6 +1,7 @@
 // lib/repositories/expense_repository.dart
 import 'package:flutter/material.dart';
 import 'package:frontend/models/category.dart';
+import 'package:frontend/models/configured_expense.dart';
 import 'package:frontend/models/expense.dart';
 import 'package:frontend/models/monthlyBalance.dart';
 
@@ -33,4 +34,23 @@ abstract class DatabaseRepository {
   Future<void> addNewCategory(String name, IconData icon);
   Future<void> updateCategory(String name, IconData icon, int id);
   Future<void> deleteCategory(int id);
+
+  Future<void> deleteConfiguredExpense(int id) async {}
+
+  Future<List<ConfiguredExpense>> fetchConfiguredExpenses();
+
+  Future<List<ConfiguredExpense>> searchConfiguredExpenses(String query);
+
+  Future<void> addNewConfiguredExpense(
+    String expenseName,
+    String newExpenseName,
+    Category category,
+  ) async {}
+
+  Future<void> updateConfiguredExpense(
+    String expenseName,
+    String newExpenseName,
+    Category category,
+    int id,
+  ) async {}
 }

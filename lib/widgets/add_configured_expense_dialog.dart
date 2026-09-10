@@ -1,64 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/category.dart';
-import 'package:frontend/models/expense.dart';
+import 'package:frontend/models/configured_expense.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/app_strings.dart';
-import 'package:frontend/utils/formatter.dart';
-import 'package:frontend/widgets/date_field.dart';
 import 'package:frontend/widgets/primary_button.dart';
 import 'package:frontend/widgets/secondary_button.dart';
 
-class AddExpenseDialog extends StatefulWidget {
-  final Expense? initialExpense;
-
-  const AddExpenseDialog({super.key, this.initialExpense});
+class AddConfiguredExpenseDialog extends StatefulWidget {
+  final ConfiguredExpense? initialConfiguredExpense;
+  const AddConfiguredExpenseDialog({super.key, this.initialConfiguredExpense});
 
   @override
-  State<AddExpenseDialog> createState() => _AddExpenseDialogState();
+  State<AddConfiguredExpenseDialog> createState() =>
+      _AddConfiguredExpenseDialogState();
 }
 
-class _AddExpenseDialogState extends State<AddExpenseDialog> {
-  late TextEditingController nameController = TextEditingController();
-  late TextEditingController amountController = TextEditingController();
+class _AddConfiguredExpenseDialogState
+    extends State<AddConfiguredExpenseDialog> {
+  late TextEditingController expenseNameController;
+  late TextEditingController newExpenseNameController;
   late Future<List<Category>> categoriesFuture;
-  late DateTime _selectedDate;
-  late final String dialogTitle =
-      widget.initialExpense?.title ?? AppStrings.get('new_expense');
+  late final String dialogTitle = AppStrings.get('new_rule');
   List<Category> _categories = [];
   int _selectedIndex = -1;
 
   bool get isFormValid {
-    return nameController.text.trim().isNotEmpty &&
-        amountController.text.trim().isNotEmpty &&
-        isStringValidNum(amountController.text.trim()) &&
-        _categories.isNotEmpty &&
-        _selectedIndex >= 0;
+    return expenseNameController.text.trim().isNotEmpty &&
+        newExpenseNameController.text.isNotEmpty &&
+        _selectedIndex != -1;
   }
 
   @override
   void initState() {
     super.initState();
-    nameController = TextEditingController(
-      text: widget.initialExpense?.title ?? '',
+
+    expenseNameController = TextEditingController(
+      text: widget.initialConfiguredExpense?.expenseName ?? '',
     );
 
-    if (widget.initialExpense != null) {
-      amountController = TextEditingController(
-        text: formatNumber(
-          widget.initialExpense!.amount,
-          AppStrings.currentLanguage,
-        ),
-      );
-    } else {
-      amountController = TextEditingController(text: '');
-    }
+    newExpenseNameController = TextEditingController(
+      text: widget.initialConfiguredExpense?.newExpenseName ?? '',
+    );
 
     categoriesFuture = RepositoryProvider.instance.fetchCategories().then((
       categories,
     ) {
-      if (widget.initialExpense != null) {
+      if (widget.initialConfiguredExpense != null) {
         final index = categories.indexWhere(
-          (c) => c.id == widget.initialExpense!.category.id,
+          (c) => c.id == widget.initialConfiguredExpense!.category.id,
         );
         setState(() {
           _categories = categories;
@@ -68,11 +57,9 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
       return categories;
     });
 
-    _selectedDate = widget.initialExpense?.createdAt ?? DateTime.now();
-
     // refresh UI so that isFormValid works
-    nameController.addListener(() => setState(() {}));
-    amountController.addListener(() => setState(() {}));
+    expenseNameController.addListener(() => setState(() {}));
+    newExpenseNameController.addListener(() => setState(() {}));
   }
 
   @override
@@ -92,31 +79,17 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
 
               const SizedBox(height: 16),
 
-              DateField(
-                hintText: AppStrings.get('date'),
-                initialDate: widget.initialExpense?.createdAt ?? DateTime.now(),
-                onDateSelected: (date) {
-                  _selectedDate = DateTime(
-                    date.year,
-                    date.month,
-                    date.day,
-                    12,
-                    0,
-                    0,
-                  ); // use 12 o'clock to not run into time problems
-                },
-              ),
-
               TextField(
-                controller: nameController,
-                decoration: InputDecoration(labelText: AppStrings.get('name')),
-              ),
-
-              TextField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
+                controller: expenseNameController,
                 decoration: InputDecoration(
-                  labelText: AppStrings.get('amount'),
+                  labelText: AppStrings.get('configured_expense_name_hint'),
+                ),
+              ),
+
+              TextField(
+                controller: newExpenseNameController,
+                decoration: InputDecoration(
+                  labelText: AppStrings.get('configured_expense_new_name_hint'),
                 ),
               ),
 
@@ -168,7 +141,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
               PrimaryButton(
                 label: AppStrings.get('save'),
                 onPressed: () {
-                  _save(widget.initialExpense);
+                  _save(widget.initialConfiguredExpense);
                 },
                 isActive: isFormValid,
               ),
@@ -188,21 +161,19 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
     );
   }
 
-  Future<void> _save(Expense? exp) async {
-    if (exp == null) {
-      await RepositoryProvider.instance.addNewExpense(
-        nameController.text,
-        parseNumber(amountController.text, AppStrings.currentLanguage),
+  Future<void> _save(ConfiguredExpense? configuredExpense) async {
+    if (configuredExpense == null) {
+      await RepositoryProvider.instance.addNewConfiguredExpense(
+        expenseNameController.text,
+        newExpenseNameController.text,
         _categories[_selectedIndex],
-        _selectedDate,
       );
     } else {
-      await RepositoryProvider.instance.updateExpense(
-        nameController.text,
-        parseNumber(amountController.text, AppStrings.currentLanguage),
+      await RepositoryProvider.instance.updateConfiguredExpense(
+        expenseNameController.text,
+        newExpenseNameController.text,
         _categories[_selectedIndex],
-        _selectedDate,
-        exp.id,
+        configuredExpense.id,
       );
     }
 
