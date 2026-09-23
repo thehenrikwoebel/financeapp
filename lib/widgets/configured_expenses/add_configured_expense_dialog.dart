@@ -20,7 +20,9 @@ class _AddConfiguredExpenseDialogState
   late TextEditingController expenseNameController;
   late TextEditingController newExpenseNameController;
   late Future<List<Category>> categoriesFuture;
-  late final String dialogTitle = AppStrings.get('new_rule');
+  late final String dialogTitle =
+      widget.initialConfiguredExpense?.expenseName ??
+      AppStrings.get('new_rule');
   List<Category> _categories = [];
   int _selectedIndex = -1;
 
