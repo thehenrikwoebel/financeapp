@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/category.dart';
 import 'package:frontend/services/app_strings.dart';
-import 'package:frontend/widgets/category_card.dart';
+import 'package:frontend/widgets/categories/category_card.dart';
 
 class CategoriesList extends StatefulWidget {
   final Future<List<Category>> categoriesFuture;

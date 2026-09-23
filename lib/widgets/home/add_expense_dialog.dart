@@ -4,9 +4,9 @@ import 'package:frontend/models/expense.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/app_strings.dart';
 import 'package:frontend/utils/formatter.dart';
-import 'package:frontend/widgets/date_field.dart';
-import 'package:frontend/widgets/primary_button.dart';
-import 'package:frontend/widgets/secondary_button.dart';
+import 'package:frontend/widgets/common/date_field.dart';
+import 'package:frontend/widgets/common/primary_button.dart';
+import 'package:frontend/widgets/common/secondary_button.dart';
 
 class AddExpenseDialog extends StatefulWidget {
   final Expense? initialExpense;
@@ -25,14 +25,14 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
   late final String dialogTitle =
       widget.initialExpense?.title ?? AppStrings.get('new_expense');
   List<Category> _categories = [];
-  int _selectedIndex = -1;
+  int selectedIndex = -1;
 
   bool get isFormValid {
     return nameController.text.trim().isNotEmpty &&
         amountController.text.trim().isNotEmpty &&
         isStringValidNum(amountController.text.trim()) &&
         _categories.isNotEmpty &&
-        _selectedIndex >= 0;
+        selectedIndex >= 0;
   }
 
   @override
@@ -62,7 +62,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
         );
         setState(() {
           _categories = categories;
-          if (index != -1) setState(() => _selectedIndex = index);
+          if (index != -1) setState(() => selectedIndex = index);
         });
       }
       return categories;
@@ -150,10 +150,10 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                             _categories[index].name,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          selected: _selectedIndex == index,
+                          selected: selectedIndex == index,
                           onSelected: (selected) {
                             setState(() {
-                              _selectedIndex = index;
+                              selectedIndex = index;
                             });
                           },
                         ),
@@ -193,14 +193,14 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
       await RepositoryProvider.instance.addNewExpense(
         nameController.text,
         parseNumber(amountController.text, AppStrings.currentLanguage),
-        _categories[_selectedIndex],
+        _categories[selectedIndex],
         _selectedDate,
       );
     } else {
       await RepositoryProvider.instance.updateExpense(
         nameController.text,
         parseNumber(amountController.text, AppStrings.currentLanguage),
-        _categories[_selectedIndex],
+        _categories[selectedIndex],
         _selectedDate,
         exp.id,
       );

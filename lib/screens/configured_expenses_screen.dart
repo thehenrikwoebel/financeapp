@@ -3,11 +3,11 @@ import 'package:frontend/models/configured_expense.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/app_strings.dart';
 import 'package:frontend/services/cache.dart';
-import 'package:frontend/widgets/add_configured_expense_dialog.dart';
-import 'package:frontend/widgets/app_bar_top.dart';
-import 'package:frontend/widgets/configured_expenses_list.dart';
-import 'package:frontend/widgets/confirm_delete_dialog.dart';
-import 'package:frontend/widgets/edit_configured_expense_dialog.dart';
+import 'package:frontend/widgets/configured_expenses/configured_expenses_list.dart';
+import 'package:frontend/widgets/configured_expenses/add_configured_expense_dialog.dart';
+import 'package:frontend/widgets/configured_expenses/edit_configured_expense_dialog.dart';
+import 'package:frontend/widgets/common/app_bar_top.dart';
+import 'package:frontend/widgets/common/confirm_delete_dialog.dart';
 
 class ConfiguredExpensesScreen extends StatefulWidget {
   const ConfiguredExpensesScreen({super.key});

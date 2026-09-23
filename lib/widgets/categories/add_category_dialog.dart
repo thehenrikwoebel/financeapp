@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/category.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/app_strings.dart';
-import 'package:frontend/widgets/primary_button.dart';
-import 'package:frontend/widgets/secondary_button.dart';
+import 'package:frontend/widgets/common/primary_button.dart';
+import 'package:frontend/widgets/common/secondary_button.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class AddCategoryDialog extends StatefulWidget {

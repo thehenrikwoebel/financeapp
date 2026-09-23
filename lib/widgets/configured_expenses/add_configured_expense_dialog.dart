@@ -3,8 +3,8 @@ import 'package:frontend/models/category.dart';
 import 'package:frontend/models/configured_expense.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/app_strings.dart';
-import 'package:frontend/widgets/primary_button.dart';
-import 'package:frontend/widgets/secondary_button.dart';
+import 'package:frontend/widgets/common/primary_button.dart';
+import 'package:frontend/widgets/common/secondary_button.dart';
 
 class AddConfiguredExpenseDialog extends StatefulWidget {
   final ConfiguredExpense? initialConfiguredExpense;

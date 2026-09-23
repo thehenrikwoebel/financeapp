@@ -3,11 +3,11 @@ import 'package:frontend/models/category.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/app_strings.dart';
 import 'package:frontend/services/cache.dart';
-import 'package:frontend/widgets/add_category_dialog.dart';
-import 'package:frontend/widgets/app_bar_top.dart';
-import 'package:frontend/widgets/categories_list.dart';
-import 'package:frontend/widgets/confirm_delete_dialog.dart';
-import 'package:frontend/widgets/edit_category_dialog.dart';
+import 'package:frontend/widgets/categories/add_category_dialog.dart';
+import 'package:frontend/widgets/common/app_bar_top.dart';
+import 'package:frontend/widgets/categories/categories_list.dart';
+import 'package:frontend/widgets/common/confirm_delete_dialog.dart';
+import 'package:frontend/widgets/categories/edit_category_dialog.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});

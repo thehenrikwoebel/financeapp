@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/monthlyBalance.dart';
@@ -40,7 +38,7 @@ class _MonthlyBalancesChartState extends State<MonthlyBalancesChart> {
           );
 
         data = data.sublist(
-          max(data.length - numberOfMonthsDisplayedInChart, 0),
+          data.length - numberOfMonthsDisplayedInChart,
           data.length,
         );
 

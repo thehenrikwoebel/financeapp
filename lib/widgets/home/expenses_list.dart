@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/expense.dart';
 import 'package:frontend/services/app_strings.dart';
-import 'package:frontend/widgets/expense_card.dart';
+import 'package:frontend/widgets/home/expense_card.dart';
 
 class ExpensesList extends StatefulWidget {
   final Future<List<Expense>> expensesFuture;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/configured_expense.dart';
-import 'package:frontend/widgets/configured_expense_card.dart';
+import 'package:frontend/widgets/configured_expenses/configured_expense_card.dart';
 
-import '../services/app_strings.dart';
+import '../../services/app_strings.dart';
 
 class ConfiguredExpensesList extends StatefulWidget {
   final Future<List<ConfiguredExpense>> configuredExpensesFuture;

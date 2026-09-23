@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/configured_expense.dart';
-import 'package:frontend/widgets/add_configured_expense_dialog.dart';
+import 'package:frontend/widgets/configured_expenses/add_configured_expense_dialog.dart';
 
 class EditConfiguredExpenseDialog extends StatelessWidget {
   final ConfiguredExpense? initialConfiguredExpense;

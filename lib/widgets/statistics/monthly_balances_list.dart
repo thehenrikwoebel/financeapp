@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/category.dart';
 import 'package:frontend/models/monthlyBalance.dart';
 import 'package:frontend/services/app_strings.dart';
-import 'package:frontend/widgets/monthly_balance_card.dart';
+import 'package:frontend/widgets/statistics/monthly_balance_card.dart';
 
 class MonthlyBalancesList extends StatefulWidget {
   final Category category;

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/monthlyBalance.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/cache.dart';
-import 'package:frontend/widgets/add_expense_dialog.dart';
-import 'package:frontend/widgets/app_bar_top.dart';
-import 'package:frontend/widgets/confirm_delete_dialog.dart';
-import 'package:frontend/widgets/edit_expense_dialog.dart';
-import 'package:frontend/widgets/expenses_list.dart';
-import 'package:frontend/widgets/load_more_button.dart';
-import 'package:frontend/widgets/monthly_balance_title.dart';
+import 'package:frontend/widgets/home/add_expense_dialog.dart';
+import 'package:frontend/widgets/common/app_bar_top.dart';
+import 'package:frontend/widgets/common/confirm_delete_dialog.dart';
+import 'package:frontend/widgets/home/edit_expense_dialog.dart';
+import 'package:frontend/widgets/home/expenses_list.dart';
+import 'package:frontend/widgets/common/load_more_button.dart';
+import 'package:frontend/widgets/statistics/monthly_balance_title.dart';
 import '../models/expense.dart';
 
 class HomeScreen extends StatefulWidget {
