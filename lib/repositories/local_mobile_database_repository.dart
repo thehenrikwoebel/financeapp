@@ -63,15 +63,31 @@ class LocalMobileDatabaseRepository implements DatabaseRepository {
     final timestamp = date.millisecondsSinceEpoch ~/ 1000;
 
     try {
-      await database.insert('Expenses', {
-        'Name': name,
-        'Amount': amount,
-        'CreatedAt': timestamp,
-        'CostTypeID': category.id,
+      await database.transaction((txn) async {
+        final rules = await txn.query(
+          'ConfiguredExpenses',
+          columns: ['NewExpenseName', 'CostTypeID'],
+          where: 'ExpenseName = ?',
+          whereArgs: [name],
+          limit: 1,
+        );
+
+        final finalName = rules.isNotEmpty
+            ? rules.first['NewExpenseName'] as String
+            : name;
+        final finalCostTypeId = rules.isNotEmpty
+            ? rules.first['CostTypeID'] as int
+            : category.id;
+
+        await txn.insert('Expenses', {
+          'Name': finalName,
+          'Amount': amount,
+          'CreatedAt': timestamp,
+          'CostTypeID': finalCostTypeId,
+        });
       });
     } on DatabaseException catch (e) {
-      if (e.isUniqueConstraintError() ||
-          e.toString().contains('FOREIGN KEY constraint failed')) {
+      if (e.toString().contains('FOREIGN KEY constraint failed')) {
         throw Exception('CostType does not exist');
       }
       rethrow;
@@ -87,7 +103,14 @@ class LocalMobileDatabaseRepository implements DatabaseRepository {
     await database.transaction((txn) async {
       await txn.update(
         'Expenses',
-        {'CostTypeID': _fallbackCategoryId}, // fallback category
+        {'CostTypeID': _fallbackCategoryId},
+        where: 'CostTypeID = ?',
+        whereArgs: [id],
+      );
+
+      await txn.update(
+        'ConfiguredExpenses',
+        {'CostTypeID': _fallbackCategoryId},
         where: 'CostTypeID = ?',
         whereArgs: [id],
       );
@@ -422,32 +445,89 @@ class LocalMobileDatabaseRepository implements DatabaseRepository {
     );
   }
 
+  static const _configuredExpenseSelect = '''
+    SELECT
+      ce.ID as ce_ID,
+      ce.ExpenseName,
+      ce.NewExpenseName,
+      c.ID as c_ID,
+      c.Name as c_Name,
+      c.CreatedAt as c_CreatedAt,
+      c.UpdatedAt as c_UpdatedAt,
+      c.icon as c_icon
+    FROM ConfiguredExpenses ce
+    JOIN CostTypes c ON ce.CostTypeID = c.ID
+  ''';
+
+  ConfiguredExpense _configuredExpenseFromRow(Map<String, Object?> row) {
+    return ConfiguredExpense.fromJson({
+      'ID': row['ce_ID'],
+      'ExpenseName': row['ExpenseName'],
+      'NewExpenseName': row['NewExpenseName'],
+      'category': {
+        'ID': row['c_ID'],
+        'Name': row['c_Name'],
+        'CreatedAt': row['c_CreatedAt'],
+        'UpdatedAt': row['c_UpdatedAt'],
+        'icon': row['c_icon'],
+      },
+    });
+  }
+
   @override
   Future<void> addNewConfiguredExpense(
     String text,
     String text2,
     Category categori,
-  ) {
-    // TODO: implement addNewConfiguredExpense
-    throw UnimplementedError();
+  ) async {
+    final database = await db;
+    try {
+      await database.insert('ConfiguredExpenses', {
+        'ExpenseName': text,
+        'NewExpenseName': text2,
+        'CostTypeID': categori.id,
+      });
+    } on DatabaseException catch (e) {
+      if (e.toString().contains('FOREIGN KEY constraint failed')) {
+        throw Exception('CostType does not exist');
+      }
+      rethrow;
+    }
   }
 
   @override
-  Future<void> deleteConfiguredExpense(int id) {
-    // TODO: implement deleteConfiguredExpense
-    throw UnimplementedError();
+  Future<void> deleteConfiguredExpense(int id) async {
+    final database = await db;
+    await database.delete(
+      'ConfiguredExpenses',
+      where: 'ID = ?',
+      whereArgs: [id],
+    );
   }
 
   @override
-  Future<List<ConfiguredExpense>> fetchConfiguredExpenses() {
-    // TODO: implement fetchConfiguredExpenses
-    throw UnimplementedError();
+  Future<List<ConfiguredExpense>> fetchConfiguredExpenses() async {
+    final database = await db;
+    final rows = await database.rawQuery(
+      '$_configuredExpenseSelect ORDER BY ce.ExpenseName',
+    );
+    return rows.map(_configuredExpenseFromRow).toList();
   }
 
   @override
-  Future<List<ConfiguredExpense>> searchConfiguredExpenses(String query) {
-    // TODO: implement searchConfiguredExpenses
-    throw UnimplementedError();
+  Future<List<ConfiguredExpense>> searchConfiguredExpenses(String query) async {
+    final database = await db;
+    final rows = await database.rawQuery(
+      '''
+      $_configuredExpenseSelect
+      WHERE ce.ExpenseName LIKE ?
+         OR ce.NewExpenseName LIKE ?
+         OR c.Name LIKE ?
+      ORDER BY ce.ExpenseName
+      ''',
+      ['%$query%', '%$query%', '%$query%'],
+    );
+    return rows.map(_configuredExpenseFromRow).toList();
   }
 
   @override
@@ -456,8 +536,24 @@ class LocalMobileDatabaseRepository implements DatabaseRepository {
     String text2,
     Category categori,
     int id,
-  ) {
-    // TODO: implement updateConfiguredExpense
-    throw UnimplementedError();
+  ) async {
+    final database = await db;
+    try {
+      await database.update(
+        'ConfiguredExpenses',
+        {
+          'ExpenseName': text,
+          'NewExpenseName': text2,
+          'CostTypeID': categori.id,
+        },
+        where: 'ID = ?',
+        whereArgs: [id],
+      );
+    } on DatabaseException catch (e) {
+      if (e.toString().contains('FOREIGN KEY constraint failed')) {
+        throw Exception('CostType does not exist');
+      }
+      rethrow;
+    }
   }
 }
