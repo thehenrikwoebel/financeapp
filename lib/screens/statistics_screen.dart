@@ -4,9 +4,9 @@ import 'package:frontend/models/monthlyBalance.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/cache.dart';
 import 'package:frontend/services/app_strings.dart';
-import 'package:frontend/widgets/app_bar_top.dart';
-import 'package:frontend/widgets/monthly_balances_chart.dart';
-import 'package:frontend/widgets/monthly_balances_list.dart';
+import 'package:frontend/widgets/common/app_bar_top.dart';
+import 'package:frontend/widgets/statistics/monthly_balances_chart.dart';
+import 'package:frontend/widgets/statistics/monthly_balances_list.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class StatisticsScreen extends StatefulWidget {

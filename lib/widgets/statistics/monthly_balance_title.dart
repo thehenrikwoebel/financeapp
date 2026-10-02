@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/monthlyBalance.dart';
 import 'package:frontend/services/app_strings.dart';
-import 'package:frontend/widgets/monthly_balance_text.dart';
+import 'package:frontend/widgets/common/monthly_balance_text.dart';
 
 class MonthlyBalanceTitle extends StatefulWidget {
   final Future<MonthlyBalance> monthlyBalanceFuture;

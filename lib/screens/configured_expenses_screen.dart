@@ -1,41 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/category.dart';
+import 'package:frontend/models/configured_expense.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/app_strings.dart';
 import 'package:frontend/services/cache.dart';
-import 'package:frontend/widgets/categories/add_category_dialog.dart';
+import 'package:frontend/widgets/configured_expenses/configured_expenses_list.dart';
+import 'package:frontend/widgets/configured_expenses/add_configured_expense_dialog.dart';
+import 'package:frontend/widgets/configured_expenses/edit_configured_expense_dialog.dart';
 import 'package:frontend/widgets/common/app_bar_top.dart';
-import 'package:frontend/widgets/categories/categories_list.dart';
 import 'package:frontend/widgets/common/confirm_delete_dialog.dart';
-import 'package:frontend/widgets/categories/edit_category_dialog.dart';
 
-class CategoriesScreen extends StatefulWidget {
-  const CategoriesScreen({super.key});
+class ConfiguredExpensesScreen extends StatefulWidget {
+  const ConfiguredExpensesScreen({super.key});
 
   @override
-  State<CategoriesScreen> createState() => _CategoriesScreenState();
+  State<ConfiguredExpensesScreen> createState() =>
+      _ConfiguredExpensesScreenState();
 }
 
-class _CategoriesScreenState extends State<CategoriesScreen> {
-  late Future<List<Category>> categoriesFuture;
+class _ConfiguredExpensesScreenState extends State<ConfiguredExpensesScreen> {
+  late Future<List<ConfiguredExpense>> configuredExpensesFuture;
   bool isSelectionMode = false;
-  Set<Category> selectedCategories = {};
+  Set<ConfiguredExpense> selectedConfiguredExpenses = {};
   final _cache = AppCache();
 
-  void _enterSelectionMode(Category category) {
+  void _enterSelectionMode(ConfiguredExpense configuredExpense) {
     setState(() {
       isSelectionMode = true;
-      selectedCategories.add(category);
+      selectedConfiguredExpenses.add(configuredExpense);
     });
   }
 
-  void _toggleSelect(Category category) {
+  void _toggleSelect(ConfiguredExpense configuredExpense) {
     setState(() {
-      if (selectedCategories.contains(category)) {
-        selectedCategories.remove(category);
-        if (selectedCategories.isEmpty) isSelectionMode = false;
+      if (selectedConfiguredExpenses.contains(configuredExpense)) {
+        selectedConfiguredExpenses.remove(configuredExpense);
+        if (selectedConfiguredExpenses.isEmpty) isSelectionMode = false;
       } else {
-        selectedCategories.add(category);
+        selectedConfiguredExpenses.add(configuredExpense);
       }
     });
   }
@@ -43,13 +44,15 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   void _exitSelectionMode() {
     setState(() {
       isSelectionMode = false;
-      selectedCategories.clear();
+      selectedConfiguredExpenses.clear();
     });
   }
 
   void _deleteSelected() async {
-    for (final category in selectedCategories) {
-      await RepositoryProvider.instance.deleteCategory(category.id);
+    for (final configuredExpense in selectedConfiguredExpenses) {
+      await RepositoryProvider.instance.deleteConfiguredExpense(
+        configuredExpense.id,
+      );
     }
     _exitSelectionMode();
     _reload();
@@ -61,37 +64,39 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     fetchData();
   }
 
-  void fetchCategories() {
-    if (_cache.categories.isValid) {
-      categoriesFuture = Future.value(_cache.categories.value);
+  void fetchConfiguredExpenses() {
+    if (_cache.configuredExpenses.isValid) {
+      configuredExpensesFuture = Future.value(_cache.configuredExpenses.value);
     } else {
-      categoriesFuture = RepositoryProvider.instance.fetchCategories().then((
-        c,
-      ) {
-        _cache.categories.update(c);
-        return c;
-      });
+      configuredExpensesFuture = RepositoryProvider.instance
+          .fetchConfiguredExpenses()
+          .then((c) {
+            _cache.configuredExpenses.update(c);
+            return c;
+          });
     }
   }
 
   void fetchData() {
     setState(() {
-      fetchCategories();
+      fetchConfiguredExpenses();
     });
   }
 
   void _reload() {
     _cache.categories.invalidate();
     _cache.expenses.invalidate();
+    _cache.configuredExpenses.invalidate();
     fetchData();
   }
 
   void _searchCategories(String query) {
     setState(() {
       if (query.isEmpty) {
-        fetchCategories();
+        fetchConfiguredExpenses();
       } else {
-        categoriesFuture = RepositoryProvider.instance.searchCategories(query);
+        configuredExpensesFuture = RepositoryProvider.instance
+            .searchConfiguredExpenses(query);
       }
     });
   }
@@ -105,12 +110,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         isSelectionMode: isSelectionMode,
         onDeleteSelected: _showConfirmDeleteDialog,
         onExitSelectionMode: _exitSelectionMode,
-        selectedCount: selectedCategories.length,
+        selectedCount: selectedConfiguredExpenses.length,
         isSearching: false,
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
-        onPressed: _showAddCategoryDialog,
+        onPressed: _showAddConfiguredExpenseDialog,
         child: const Icon(Icons.add),
       ),
       body: Column(
@@ -119,17 +124,18 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             height: 75,
             child: Center(
               child: Text(
-                AppStrings.get('categories'),
+                AppStrings.get('configured_expenses'),
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
           ),
           Expanded(
-            child: CategoriesList(
-              categoriesFuture: categoriesFuture,
-              onCardTap: (category) => _showEditCategoryDialog(category),
+            child: ConfiguredExpensesList(
+              configuredExpensesFuture: configuredExpensesFuture,
+              onCardTap: (configuredExpense) =>
+                  _showEditConfiguredExpenseDialog(configuredExpense),
               isSelectionMode: isSelectionMode,
-              selectedCategories: selectedCategories,
+              selectedConfiguredExpenses: selectedConfiguredExpenses,
               onLongPress: _enterSelectionMode,
               onToggleSelect: _toggleSelect,
             ),
@@ -139,11 +145,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 
-  void _showAddCategoryDialog() async {
+  void _showAddConfiguredExpenseDialog() async {
     final result = await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const AddCategoryDialog(),
+      builder: (context) => const AddConfiguredExpenseDialog(),
     );
 
     if (result == true) {
@@ -152,11 +158,15 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     }
   }
 
-  void _showEditCategoryDialog(Category category) async {
+  void _showEditConfiguredExpenseDialog(
+    ConfiguredExpense configuredExpense,
+  ) async {
     final result = await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => EditCategoryDialog(initialCategory: category),
+      builder: (context) => EditConfiguredExpenseDialog(
+        initialConfiguredExpense: configuredExpense,
+      ),
     );
 
     if (result == true) {

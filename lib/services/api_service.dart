@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/category.dart';
+import 'package:frontend/models/configured_expense.dart';
 import 'package:frontend/repositories/database_repository.dart';
 import 'package:http/http.dart' as http;
 import '../models/expense.dart';
@@ -186,6 +187,84 @@ class ApiService implements DatabaseRepository {
   Future<void> deleteCategory(int id) async {
     await http.post(
       Uri.parse('$baseUrl/costtypes/delete/$id'),
+      headers: {"Content-Type": "application/json"},
+    );
+  }
+
+  @override
+  Future<void> addNewConfiguredExpense(
+    String expenseName,
+    String newExpenseName,
+    Category category,
+  ) async {
+    await http.post(
+      Uri.parse('$baseUrl/configured_expenses/add'),
+      body: jsonEncode({
+        "expenseName": expenseName,
+        "newExpenseName": newExpenseName,
+        "costTypeID": category.id,
+      }),
+      headers: {"Content-Type": "application/json"},
+    );
+  }
+
+  @override
+  Future<void> deleteConfiguredExpense(int id) async {
+    await http.post(Uri.parse('$baseUrl/configured_expenses/delete/$id'));
+  }
+
+  @override
+  Future<List<ConfiguredExpense>> fetchConfiguredExpenses() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/configured_expenses/$limit'),
+    );
+
+    if (response.statusCode == 200) {
+      final List configuredExpenses = json.decode(response.body);
+      return configuredExpenses
+          .map(
+            (configuredExpense) =>
+                ConfiguredExpense.fromJson(configuredExpense),
+          )
+          .toList();
+    } else {
+      throw Exception('Fehler beim Laden der Kategorien!');
+    }
+  }
+
+  @override
+  Future<List<ConfiguredExpense>> searchConfiguredExpenses(String query) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/configured_expenses/$query'),
+    );
+
+    if (response.statusCode == 200) {
+      final List configuredExpenses = json.decode(response.body);
+      return configuredExpenses
+          .map(
+            (configuredExpense) =>
+                ConfiguredExpense.fromJson(configuredExpense),
+          )
+          .toList();
+    } else {
+      throw Exception('Fehler beim Laden der Kategorien!');
+    }
+  }
+
+  @override
+  Future<void> updateConfiguredExpense(
+    String expenseName,
+    String newExpenseName,
+    Category category,
+    int id,
+  ) async {
+    await http.post(
+      Uri.parse('$baseUrl/configured_expenses/update/$id'),
+      body: jsonEncode({
+        "expenseName": expenseName,
+        "newExpenseName": newExpenseName,
+        "costTypeID": category.id,
+      }),
       headers: {"Content-Type": "application/json"},
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/category.dart';
+import 'package:frontend/models/configured_expense.dart';
 import 'package:frontend/models/expense.dart';
 import 'package:frontend/models/monthlyBalance.dart';
 import 'package:frontend/repositories/database_repository.dart';
@@ -10,6 +11,9 @@ class LocalWebDatabaseRepository implements DatabaseRepository {
 
   final _expenseStore = intMapStoreFactory.store('expenses');
   final _categoryStore = intMapStoreFactory.store('cost_types');
+  final _configuredExpenseStore = intMapStoreFactory.store(
+    'configured_expenses',
+  );
 
   Future<Database> get db async {
     _db ??= await databaseFactoryWeb.openDatabase('expenses_local.db');
@@ -109,7 +113,6 @@ class LocalWebDatabaseRepository implements DatabaseRepository {
     final database = await db;
     final lower = query.toLowerCase();
 
-    // Alle Expenses laden und in Dart filtern (wie LIKE in SQL)
     final allRecords = await _expenseStore.find(
       database,
       finder: Finder(sortOrders: [SortOrder('createdAt', false)]),
@@ -133,12 +136,39 @@ class LocalWebDatabaseRepository implements DatabaseRepository {
   ) async {
     final database = await db;
     final timestamp = date.millisecondsSinceEpoch ~/ 1000;
-    await _expenseStore.add(database, {
-      'title': name,
-      'amount': amount,
-      'costTypeId': category.id,
-      'createdAt': timestamp,
-      'updatedAt': null,
+
+    await database.transaction((txn) async {
+      // check for a matching rule (exact match on expenseName, like "WHERE ExpenseName=?")
+      final rule = await _configuredExpenseStore.findFirst(
+        txn,
+        finder: Finder(filter: Filter.equals('expenseName', name)),
+      );
+
+      final String finalName;
+      final int? finalCostTypeId;
+
+      if (rule != null) {
+        // configured expense rule overrides name and category
+        finalName = rule.value['newExpenseName'] as String;
+        finalCostTypeId = rule.value['costTypeId'] as int?;
+      } else {
+        finalName = name;
+        finalCostTypeId = category.id;
+      }
+
+      // replaces the FOREIGN KEY check (sembast has no integrity constraints)
+      if (finalCostTypeId != null &&
+          !await _categoryStore.record(finalCostTypeId).exists(txn)) {
+        throw Exception('CostType does not exist');
+      }
+
+      await _expenseStore.add(txn, {
+        'title': finalName,
+        'amount': amount,
+        'costTypeId': finalCostTypeId,
+        'createdAt': timestamp,
+        'updatedAt': null,
+      });
     });
   }
 
@@ -240,6 +270,17 @@ class LocalWebDatabaseRepository implements DatabaseRepository {
     final affected = await _expenseStore.find(database, finder: finder);
     for (final expense in affected) {
       await _expenseStore.record(expense.key).update(database, {
+        'costTypeId': null,
+      });
+    }
+
+    final affectedConfigured = await _configuredExpenseStore.find(
+      database,
+      finder: finder,
+    );
+
+    for (final c in affectedConfigured) {
+      await _configuredExpenseStore.record(c.key).update(database, {
         'costTypeId': null,
       });
     }
@@ -353,5 +394,113 @@ class LocalWebDatabaseRepository implements DatabaseRepository {
     }
 
     return result;
+  }
+
+  /// loads the categories for the given records (each category only once)
+  Future<Map<int, Category>> _loadCategoryMap(
+    List<RecordSnapshot<int, Map<String, Object?>>> records,
+    Database database,
+  ) async {
+    final ids = records
+        .map((r) => r.value['costTypeId'] as int?)
+        .whereType<int>()
+        .toSet();
+
+    final map = <int, Category>{};
+    for (final id in ids) {
+      final record = await _categoryStore.record(id).getSnapshot(database);
+      if (record != null) {
+        map[id] = _categoryFromRecord(record);
+      }
+    }
+    return map;
+  }
+
+  /// loads all configured expenses and enriches them with their categories
+  Future<List<ConfiguredExpense>> _hydrateConfiguredExpenses(
+    List<RecordSnapshot<int, Map<String, Object?>>> records,
+    Database database,
+  ) async {
+    final categoryMap = await _loadCategoryMap(records, database);
+
+    // fallback category for costTypeId NULL
+    final fallback = Category(
+      id: -1,
+      name: 'Unbekannt',
+      createdAt: DateTime.now(),
+      updatedAt: null,
+      icon: Icons.help_outline,
+    );
+
+    return records.map((r) {
+      final v = r.value;
+      final costTypeId = v['costTypeId'] as int?;
+      final category = costTypeId != null
+          ? categoryMap[costTypeId] ?? fallback
+          : fallback;
+
+      return ConfiguredExpense(
+        id: r.key,
+        expenseName: v['expenseName'] as String,
+        newExpenseName: v['newExpenseName'] as String,
+        category: category,
+      );
+    }).toList();
+  }
+
+  @override
+  Future<void> addNewConfiguredExpense(
+    String text,
+    String text2,
+    Category category,
+  ) async {
+    final database = await db;
+    await _configuredExpenseStore.add(database, {
+      'expenseName': text,
+      'newExpenseName': text2,
+      'costTypeId': category.id,
+    });
+  }
+
+  @override
+  Future<void> deleteConfiguredExpense(int id) async {
+    final database = await db;
+    await _configuredExpenseStore.record(id).delete(database);
+  }
+
+  @override
+  Future<List<ConfiguredExpense>> fetchConfiguredExpenses() async {
+    final database = await db;
+    final records = await _configuredExpenseStore.find(
+      database,
+      finder: Finder(sortOrders: [SortOrder('expenseName')]),
+    );
+    return _hydrateConfiguredExpenses(records, database);
+  }
+
+  @override
+  Future<List<ConfiguredExpense>> searchConfiguredExpenses(String query) async {
+    final lower = query.toLowerCase();
+    final all = await fetchConfiguredExpenses();
+    return all.where((e) {
+      return e.expenseName.toLowerCase().contains(lower) ||
+          e.newExpenseName.toLowerCase().contains(lower) ||
+          e.category.name.toLowerCase().contains(lower);
+    }).toList();
+  }
+
+  @override
+  Future<void> updateConfiguredExpense(
+    String text,
+    String text2,
+    Category category,
+    int id,
+  ) async {
+    final database = await db;
+    await _configuredExpenseStore.record(id).update(database, {
+      'expenseName': text,
+      'newExpenseName': text2,
+      'costTypeId': category.id,
+    });
   }
 }

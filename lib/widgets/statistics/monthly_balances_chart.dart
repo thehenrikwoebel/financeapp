@@ -37,14 +37,16 @@ class _MonthlyBalancesChartState extends State<MonthlyBalancesChart> {
                 : a.month.compareTo(b.month),
           );
 
-        data = data.sublist(
-          data.length - numberOfMonthsDisplayedInChart,
-          data.length,
-        );
-
         if (data.isEmpty) {
           return Center(child: Text(AppStrings.get('no_data')));
         }
+
+        // just the last N months
+        final start = (data.length - numberOfMonthsDisplayedInChart).clamp(
+          0,
+          data.length,
+        );
+        data = data.sublist(start);
 
         final spots = data
             .asMap()

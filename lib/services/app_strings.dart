@@ -61,6 +61,11 @@ class AppStrings extends ChangeNotifier {
     'select_language': 'Wähle eine Sprache',
     'settings': 'Einstellungen',
     'confirm_delete_title': 'Einträge löschen?',
+    'rules': 'Regeln',
+    'configured_expenses': 'Konfigurierte Ausgaben',
+    'new_rule': 'Neue Regel',
+    'configured_expense_name_hint': 'ursprünglicher Name',
+    'configured_expense_new_name_hint': 'neuer Name',
   };
 
   static const _en = {
@@ -119,6 +124,11 @@ class AppStrings extends ChangeNotifier {
     'select_language': 'Select a language',
     'settings': 'Settings',
     'confirm_delete_title': 'Delete entries?',
+    'rules': 'Rules',
+    'configured_expenses': 'Configured Expenses',
+    'new_rule': 'New Rule',
+    'configured_expense_name_hint': 'old name',
+    'configured_expense_new_name_hint': 'new name',
   };
 
   static const languageToShorthand = {'German': 'de', 'English': 'en'};

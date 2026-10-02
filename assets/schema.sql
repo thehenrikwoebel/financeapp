@@ -13,4 +13,11 @@ CREATE TABLE Expenses (
         CostTypeID INTEGER,
         FOREIGN KEY (CostTypeID) REFERENCES CostTypes(ID) ON DELETE SET NULL
     );
+CREATE TABLE IF NOT EXISTS ConfiguredExpenses (
+  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  ExpenseName TEXT NOT NULL UNIQUE,
+  NewExpenseName TEXT NOT NULL,
+  CostTypeID INTEGER NOT NULL,
+  FOREIGN KEY (CostTypeID) REFERENCES CostTypes(ID)
+);
 INSERT INTO CostTypes (ID, Name, icon) VALUES (0, 'no category', 'question_mark');

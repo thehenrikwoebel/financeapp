@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/expense.dart';
-import 'package:frontend/widgets/add_expense_dialog.dart';
+import 'package:frontend/widgets/home/add_expense_dialog.dart';
 
 class EditExpenseDialog extends StatefulWidget {
   final Expense? initialExpense;

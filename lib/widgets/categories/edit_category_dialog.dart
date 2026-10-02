@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/category.dart';
 
-import 'package:frontend/widgets/add_category_dialog.dart';
+import 'package:frontend/widgets/categories/add_category_dialog.dart';
 
 class EditCategoryDialog extends StatefulWidget {
   final Category? initialCategory;

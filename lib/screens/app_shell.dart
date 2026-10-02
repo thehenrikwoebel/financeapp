@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/categories_screen.dart';
+import 'package:frontend/screens/configured_expenses_screen.dart';
 import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/settings_screen.dart';
 import 'package:frontend/screens/statistics_screen.dart';
@@ -19,6 +20,7 @@ class _AppShellState extends State<AppShell> {
     const HomeScreen(),
     const StatisticsScreen(),
     const CategoriesScreen(),
+    const ConfiguredExpensesScreen(),
     const SettingsScreen(),
   ];
 
@@ -48,6 +50,11 @@ class _AppShellState extends State<AppShell> {
                 icon: Icon(Icons.category_outlined),
                 selectedIcon: Icon(Icons.category),
                 label: AppStrings.get('categories'),
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.rule_outlined),
+                label: AppStrings.get('rules'),
+                selectedIcon: Icon(Icons.rule),
               ),
               NavigationDestination(
                 icon: Icon(Icons.settings_outlined),

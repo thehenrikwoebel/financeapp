@@ -4,9 +4,9 @@ import 'package:frontend/models/expense.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/app_strings.dart';
 import 'package:frontend/utils/formatter.dart';
-import 'package:frontend/widgets/date_field.dart';
-import 'package:frontend/widgets/primary_button.dart';
-import 'package:frontend/widgets/secondary_button.dart';
+import 'package:frontend/widgets/common/date_field.dart';
+import 'package:frontend/widgets/common/primary_button.dart';
+import 'package:frontend/widgets/common/secondary_button.dart';
 
 class AddExpenseDialog extends StatefulWidget {
   final Expense? initialExpense;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/app_strings.dart';
-import 'package:frontend/widgets/primary_button.dart';
+import 'package:frontend/widgets/common/primary_button.dart';
 
 class LoadMoreButton extends StatelessWidget {
   const LoadMoreButton({super.key, this.onPressed});
