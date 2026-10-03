@@ -4,6 +4,7 @@ import 'package:frontend/models/expense.dart';
 import 'package:frontend/repositories/repository_provider.dart';
 import 'package:frontend/services/app_strings.dart';
 import 'package:frontend/utils/formatter.dart';
+import 'package:frontend/widgets/common/category_chips.dart';
 import 'package:frontend/widgets/common/date_field.dart';
 import 'package:frontend/widgets/common/primary_button.dart';
 import 'package:frontend/widgets/common/secondary_button.dart';
@@ -22,17 +23,15 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
   late TextEditingController amountController = TextEditingController();
   late Future<List<Category>> categoriesFuture;
   late DateTime _selectedDate;
+  Category? _selectedCategory;
   late final String dialogTitle =
       widget.initialExpense?.title ?? AppStrings.get('new_expense');
-  List<Category> _categories = [];
-  int selectedIndex = -1;
 
   bool get isFormValid {
     return nameController.text.trim().isNotEmpty &&
         amountController.text.trim().isNotEmpty &&
         isStringValidNum(amountController.text.trim()) &&
-        _categories.isNotEmpty &&
-        selectedIndex >= 0;
+        _selectedCategory != null;
   }
 
   @override
@@ -53,20 +52,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
       amountController = TextEditingController(text: '');
     }
 
-    categoriesFuture = RepositoryProvider.instance.fetchCategories().then((
-      categories,
-    ) {
-      if (widget.initialExpense != null) {
-        final index = categories.indexWhere(
-          (c) => c.id == widget.initialExpense!.category.id,
-        );
-        setState(() {
-          _categories = categories;
-          if (index != -1) setState(() => selectedIndex = index);
-        });
-      }
-      return categories;
-    });
+    categoriesFuture = RepositoryProvider.instance.fetchCategories();
 
     _selectedDate = widget.initialExpense?.createdAt ?? DateTime.now();
 
@@ -122,45 +108,10 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
 
               const SizedBox(height: 16),
 
-              FutureBuilder<List<Category>>(
-                future: categoriesFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  }
-
-                  if (snapshot.hasError) {
-                    return Text(
-                      "${AppStrings.get('error')}: ${snapshot.error}",
-                    );
-                  }
-
-                  _categories = snapshot.data!;
-
-                  return Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: List.generate(_categories.length, (index) {
-                      return SizedBox(
-                        width: 100,
-                        child: ChoiceChip(
-                          showCheckmark: false,
-                          avatar: Icon(_categories[index].icon),
-                          label: Text(
-                            _categories[index].name,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          selected: selectedIndex == index,
-                          onSelected: (selected) {
-                            setState(() {
-                              selectedIndex = index;
-                            });
-                          },
-                        ),
-                      );
-                    }),
-                  );
-                },
+              CategoryChips(
+                categoriesFuture: categoriesFuture,
+                initialCategory: widget.initialExpense?.category,
+                onSelectedCategory: _onSelectedCategory,
               ),
 
               const SizedBox(height: 16),
@@ -193,14 +144,14 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
       await RepositoryProvider.instance.addNewExpense(
         nameController.text,
         parseNumber(amountController.text, AppStrings.currentLanguage),
-        _categories[selectedIndex],
+        _selectedCategory!,
         _selectedDate,
       );
     } else {
       await RepositoryProvider.instance.updateExpense(
         nameController.text,
         parseNumber(amountController.text, AppStrings.currentLanguage),
-        _categories[selectedIndex],
+        _selectedCategory!,
         _selectedDate,
         exp.id,
       );
@@ -209,5 +160,11 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
     if (mounted) {
       Navigator.pop(context, true);
     }
+  }
+
+  void _onSelectedCategory(Category category) {
+    setState(() {
+      _selectedCategory = category;
+    });
   }
 }
