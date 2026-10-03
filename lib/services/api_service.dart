@@ -268,4 +268,20 @@ class ApiService implements DatabaseRepository {
       headers: {"Content-Type": "application/json"},
     );
   }
+
+  @override
+  Future<void> updateCategoryBulk(
+    String name,
+    Category category,
+    List<int> ids,
+  ) async {
+    await http.post(
+      Uri.parse('$baseUrl/expenses/update/bulk'),
+      body: jsonEncode({
+        "base_expense": {"name": name, "amount": 0, "costTypeId": category.id},
+        "ids": ids,
+      }),
+      headers: {"Content-Type": "application/json"},
+    );
+  }
 }

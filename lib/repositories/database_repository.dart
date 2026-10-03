@@ -33,6 +33,11 @@ abstract class DatabaseRepository {
   Future<void> deleteExpense(int id);
   Future<void> addNewCategory(String name, IconData icon);
   Future<void> updateCategory(String name, IconData icon, int id);
+  Future<void> updateCategoryBulk(
+    String name,
+    Category category,
+    List<int> ids,
+  );
   Future<void> deleteCategory(int id);
 
   Future<void> deleteConfiguredExpense(int id) async {}

@@ -9,6 +9,7 @@ class AppBarTop extends StatefulWidget implements PreferredSizeWidget {
   final int selectedCount;
   final VoidCallback? onExitSelectionMode;
   final VoidCallback? onDeleteSelected;
+  final VoidCallback? onEditSelected;
   final bool isSearching;
   final ValueChanged<bool>? onSearchToggle;
 
@@ -23,6 +24,7 @@ class AppBarTop extends StatefulWidget implements PreferredSizeWidget {
     this.onDeleteSelected,
     required this.isSearching,
     this.onSearchToggle,
+    this.onEditSelected,
   });
 
   @override
@@ -75,6 +77,10 @@ class _AppBarTopState extends State<AppBarTop> {
               '${widget.selectedCount} ${AppStrings.get('selected')}',
             ),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: widget.onEditSelected,
+              ),
               IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: widget.onDeleteSelected,

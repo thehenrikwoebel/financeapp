@@ -6,6 +6,7 @@ import 'package:frontend/widgets/home/add_expense_dialog.dart';
 import 'package:frontend/widgets/common/app_bar_top.dart';
 import 'package:frontend/widgets/common/confirm_delete_dialog.dart';
 import 'package:frontend/widgets/home/edit_expense_dialog.dart';
+import 'package:frontend/widgets/home/edit_selected_expenses_dialog.dart';
 import 'package:frontend/widgets/home/expenses_list.dart';
 import 'package:frontend/widgets/common/load_more_button.dart';
 import 'package:frontend/widgets/statistics/monthly_balance_title.dart';
@@ -168,6 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedCount: selectedExpenses.length,
         onExitSelectionMode: _exitSelectionMode,
         onDeleteSelected: _showConfirmDeleteDialog,
+        onEditSelected: _showEditSelectedDialog,
         isSearching: _isSearching,
         onSearchToggle: (value) => setState(() => _isSearching = value),
       ),
@@ -232,6 +234,21 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context) => EditExpenseDialog(initialExpense: expense),
     );
     if (result == true) {
+      _reloadData();
+    }
+  }
+
+  void _showEditSelectedDialog() async {
+    final result = await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) =>
+          EditSelectedExpensesDialog(expenses: selectedExpenses),
+    );
+
+    if (result == true) {
+      // reloads expenses if expenses were updated
+      isSelectionMode = false;
       _reloadData();
     }
   }

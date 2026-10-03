@@ -556,4 +556,14 @@ class LocalMobileDatabaseRepository implements DatabaseRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<void> updateCategoryBulk(
+    String name,
+    Category category,
+    List<int> ids,
+  ) {
+    // TODO: implement updateCategoryBulk
+    throw UnimplementedError();
+  }
 }

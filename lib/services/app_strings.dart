@@ -66,6 +66,8 @@ class AppStrings extends ChangeNotifier {
     'new_rule': 'Neue Regel',
     'configured_expense_name_hint': 'ursprünglicher Name',
     'configured_expense_new_name_hint': 'neuer Name',
+    'shared_name': "gemeinsamer Name",
+    'edit_selected_expenses': 'Ausgaben bearbeiten',
   };
 
   static const _en = {
@@ -129,6 +131,8 @@ class AppStrings extends ChangeNotifier {
     'new_rule': 'New Rule',
     'configured_expense_name_hint': 'old name',
     'configured_expense_new_name_hint': 'new name',
+    'shared_name': "shared name",
+    'edit_selected_expenses': 'Edit expenses',
   };
 
   static const languageToShorthand = {'German': 'de', 'English': 'en'};
