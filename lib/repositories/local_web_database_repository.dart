@@ -509,8 +509,19 @@ class LocalWebDatabaseRepository implements DatabaseRepository {
     String name,
     Category category,
     List<int> ids,
-  ) {
-    // TODO: implement updateCategoryBulk
-    throw UnimplementedError();
+  ) async {
+    if (ids.isEmpty) return;
+
+    final database = await db;
+
+    await database.transaction((txn) async {
+      for (final id in ids) {
+        await _expenseStore.record(id).update(txn, {
+          'title': name,
+          'costTypeId': category.id,
+          'updatedAt': _now,
+        });
+      }
+    });
   }
 }

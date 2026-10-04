@@ -562,8 +562,27 @@ class LocalMobileDatabaseRepository implements DatabaseRepository {
     String name,
     Category category,
     List<int> ids,
-  ) {
-    // TODO: implement updateCategoryBulk
-    throw UnimplementedError();
+  ) async {
+    if (ids.isEmpty) return;
+
+    final database = await db;
+    final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+    await database.transaction((txn) async {
+      final batch = txn.batch();
+      for (final id in ids) {
+        batch.update(
+          'Expenses',
+          {
+            'Name': name,
+            'CostTypeID': category.id,
+            'UpdatedAt': timestamp,
+          },
+          where: 'ID = ?',
+          whereArgs: [id],
+        );
+      }
+      await batch.commit(noResult: true);
+    });
   }
 }
